@@ -9,7 +9,7 @@ Hoe.new('ruby-aws', RubyAWS::VERSION) do |p|
   p.summary = 'Ruby libraries for working with Amazon Web Services ( Mechanical Turk )'
   p.email = 'ruby-aws-develop@rubyforge.org'
   p.author = 'David J Parrott'
-  p.description = p.paragraphs_of('README.txt', 2..3).join("\n\n")
+  p.description = p.paragraphs_of('README.txt', 2..2).join("\n\n")
   p.url = "http://rubyforge.org/projects/ruby-aws/"
   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
   p.extra_deps << ['highline','>= 1.2.7']
