@@ -14,7 +14,7 @@ class SOAPTransport
   REQUIRED_PARAMETERS = [:Wsdl]
 
   def self.canSOAP?
-    SOAP::VERSION >= "1.5.5"
+    SOAP::Version >= "1.5.5"
   end
 
   def initialize( args )
