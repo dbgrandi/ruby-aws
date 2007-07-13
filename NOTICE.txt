@@ -1,0 +1,4 @@
+Libraries for Amazon Web Services
+Copyright 2007 Amazon Web Services, LLC
+
+This product includes software developed by Amazon Web Services, LLC

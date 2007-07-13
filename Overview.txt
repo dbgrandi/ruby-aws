@@ -1,0 +1,175 @@
+== Overview of the Amazon Mechanical Turk SDK for Ruby
+
+The Amazon Mechanical Turk SDK for Ruby is a set of libraries and tools designed to make it easier for you to build solutions leveraging Amazon Mechanical Turk. The goals of the SDK are:
+* To abstract you from the "muck" of using web services
+* To simplify using the various Amazon Mechanical Turk APIs
+* To allow you to focus more on solving the business problem and less on managing technical details
+
+Before getting started, you should first review the getting started and developer guides for the Amazon Mechanical Turk web service APIs at http://developer.amazonwebservices.com/connect/entry.jspa?externalID=671&categoryID=28.  They provide excellent background information on the various concepts of Amazon Mechanical Turk.
+
+== Table of Contents
+
+1. Features and Benefits
+2. Prerequisites
+3. Installing the Amazon Mechanical Turk SDK for Ruby
+4. Using the Amazon Mechanical Turk Developer Sandbox for Testing
+5. Running the Hello World Sample Application
+6. Running the Simple Survey Sample Application
+7. Running the Best Image Sample Application
+8. Running the Web Site Categorization Sample Application
+9. Running the Reviewer Sample Application
+10. Comments, Questions, or Feedback
+
+== Features and Benefits
+
+The Amazon Mechanical Turk SDK for Ruby offers you the following features and benefits:
+
+* Access Amazon Mechanical Turk web services through easy-to-use Ruby APIs
+  * Increase productivity by avoiding web service "muck" like authentication, forming SOAP requests, XML parsing, etc.
+    
+* Bulk load HITs via a Question Template File, an Input File, and a HIT Properties File.
+  * Significantly reduce the amount of coding necessary to manage your HIT design and input data.
+    
+* Output submitted results to a file.
+  * Results can be easily viewed in a text editor and can be parsed for integration to your backend system or into another HIT workflow.
+  
+== Prerequisites
+
+To use the SDK and successfully run the samples, you must meet these prerequisites:
+
+* You must have an Amazon Web Services (AWS) account. You can sign up at the AWS web site: http://aws.amazon.com.
+* You must have an Amazon Mechanical Turk Requester account. Be sure to use the same e-mail address and password you used when creating your Amazon Web Services account. You can sign up at the Requester web site: http://requester.mturk.com
+* You must have Ruby 1.8.2 or later.  You can download Ruby at the following web site: http://www.ruby-lang.org
+* If you want to optionally create your own GEM package, you will need Rake (http://rake.rubyforge.org) and Hoe (http://seattlerb.rubyforge.org/hoe)
+  
+
+== Installing the Amazon Mechanical Turk SDK for Ruby
+
+The installation of the SDK and other required components is simple and requires minimal configuration.
+
+* Download the latest version of the Amazon Mechanical Turk SDK for Ruby from the Amazon Mechanical Turk Resource Center here: http://developer.amazonwebservices.com/connect/kbcategory.jspa?categoryID=7
+* Uncompress and expand the downloaded file to your desired installation directory for the SDK.
+* Configure the SDK to use your AWS identifier information:
+  1. execute the ruby-aws script  ( $> ruby -I./lib ./bin/ruby-aws )
+  2. input your Access Key Id and Secret Access Key when prompted.
+  3. Save and Exit
+* Optionally, you can install the SDK as a GEM.  To install the SDK as a GEM, run the following command:
+  * gem install [SDK installation Directory]/pkg/ruby-aws-0.9.0.gem
+
+== Using the Amazon Mechanical Turk Developer Sandbox for Testing
+
+By default, the SDK for Ruby is configured to work against the Developer Sandbox (http://sandbox.mturk.com).  The Developer Sandbox is a simulated environment that allows developers to test their Amazon Mechanical Turk solutions for free.
+
+HITs by default will be created in the Developer Sandbox environment.  To view these created HITs, go to the Developer Sandbox worker site (http://workersandbox.mturk.com).
+
+To configure the SDK to work against the Production site (http://www.mturk.com) pass :Host => :Production to MechanicalTurkRequester.new
+
+Note: When creating HITs on the Production site, you will need to have a funded Amazon Mechanical Turk account. Visit the following link to fund your account: http://requester.mturk.com/mturk/youraccount.
+      
+== Running the Hello World Sample Application
+
+With this sample application, you create a HIT that asks a simple question, "What is the weather like right now in Seattle, WA?"
+
+To run this sample, navigate to your SDK installation directory and run the following command:
+
+  For Windows: ruby -I.\lib .\samples\helloworld\MTurkHelloWorld.rb
+
+  For UNIX: ruby -I./lib ./samples/helloworld/MTurkHelloWorld.rb
+  
+Your HIT has been successfully loaded.  You can visit the Developer Sandbox worker site http://workersandbox.mturk.com to view the HIT. 
+
+== Running the Simple Survey Sample Application
+
+With this sample application, you create a HIT that conducts a quick survey on a worker's political party preferences.
+
+The following concepts are covered:
+  * Loading the QAP from a file
+  * Using a locale qualification
+
+To run this sample, navigate to your SDK installation directory and run the following command:
+
+  For Windows: ruby -I.\lib .\samples\simple_survey\SimpleSurvey.rb
+
+  For UNIX: ruby -I./lib ./samples/simple_survey/SimpleSurvey.rb
+  
+Your HIT has been successfully loaded.  You can visit the Developer Sandbox worker site http://workersandbox.mturk.com to view the HIT. 
+
+== Running the Best Image Sample Application
+
+With this sample application, you create a HIT that asks a worker to choose the best image of three given a set of criteria.
+
+The following concepts are covered:
+  * Using the <FormattedContent> functionality in QAP
+  * Loading the QAP from a file
+  * Loading the HIT properties from a file
+  * Using a basic system qualification
+
+To run this sample, navigate to your SDK installation directory and run the following command:
+
+  For Windows: ruby -I.\lib .\samples\best_image\BestImage.rb
+
+  For UNIX: ruby -I./lib ./samples/best_image/BestImage.rb
+
+Your HIT has been successfully loaded.  You can visit the Developer Sandbox worker site http://workersandbox.mturk.com to view the HIT. 
+
+== Running the Web Site Categorization Sample Application
+
+With this sample application, you create HITs asking workers to categorize web sites.
+
+The following concepts are covered:
+ * Loading HITs in bulk using an input file
+ * Loading HITs using only files
+
+To run this sample, navigate to your SDK installation directory and run the following command:
+
+  For Windows: ruby -I.\lib .\samples\site_category\SiteCategory.rb
+
+  For UNIX: ruby -I./lib ./samples/site_category/SiteCategory.rb
+  
+Your HITs have been successfully loaded.  You can visit the Developer Sandbox worker site http://workersandbox.mturk.com to view the HIT. 
+ 
+== Running the Reviewer Sample Application
+
+With this sample application, you retrieve and approve the results of your HITs that have been submitted.
+
+The following concepts are covered:
+  * Retrieving results for a HIT
+  * Outputting results for several HITs to a file
+  * Approving assignments
+
+To run this sample and demonstrate retrieving the results of one HIT:
+  * Take note of the HIT ID that was created by the "Simple Survey" sample application.
+  * Make sure that the HIT has been completed and results have been submitted.
+  * Navigate to your SDK installation directory and run the following command:
+  
+  For Windows: ruby -I.\lib .\samples\reviewer\Reviewer.rb --review [HIT ID of Simple Survey HIT created earlier i.e. SYSZH6HTMKFG2ZDECWS0]
+  
+  For UNIX: ruby -I./lib ./samples/reviewer/Reviewer.rb --review [HIT ID of Simple Survey HIT created earlier i.e. SYSZH6HTMKFG2ZDECWS0]
+
+Additionally, the Reviewer Sample Application can also retrieve the results of several HITs using the .success file generated when performing a bulk HIT creation operation.  To run this sample and demonstrate retrieving the results of a bulk HIT load operation:
+  * Make sure that all the HITs of the Web Site Categorization sample application have been completed and results have been submitted.
+  * Navigate to your SDK installation directory and run the following command:
+
+    For Windows: ruby -I.\lib .\samples\reviewer\Reviewer.rb --results --input .\samples\site_category\hits.success --output output.txt
+    
+    For UNIX: ruby -I./lib ./samples/reviewer/Reviewer.rb --results --input ./samples/site_category/hits.success --output output.txt
+    
+  * Open the output file in a text editor or preferred reader of choice for tab delimited text files.  The file will contain all details associated with the HIT and assignments as well as the results submitted by workers.
+
+You have successfully retrieved the results of your HITs that you loaded in bulk.
+
+== Regenerating the GEM package
+The distributable contains a Rakefile to allow a GEM to be regenerated.  There is a dependency on having the Hoe GEM.
+
+To regeneate the GEM package:
+  * Navigate to your SDK installation directory and run the following command:
+    
+    rake gem
+
+There is currently an outstanding issue with Hoe (1.2.0 and prior) being able to build the Amazon Mechanical Turk SDK for Ruby and is logged here: http://rubyforge.org/tracker/index.php?func=detail&aid=10506&group_id=1513&atid=5921.
+
+To regenerate the GEM package, install the latest version of Hoe (1.2.1 and up) which contains the fix for the above issue.
+
+== Comments, Questions or Feedback
+
+If you have any comments, questions or feedback on the Amazon Mechanical Turk SDK for Ruby or the service in general, please visit the Amazon Mechanical Turk discussion forums at: http://developer.amazonwebservices.com/connect/forum.jspa?forumID=11

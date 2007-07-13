@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
+# License::   Apache License, Version 2.0
+
+require 'ruby-aws'
+require 'amazon/webservices/util/command_line'
+
+Amazon::WebServices::Util::CommandLine.new.run
