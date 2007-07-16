@@ -5,8 +5,6 @@
 
 # The Site Category sample application will create 5 HITs asking workers to categorize websites into predefined categories.
 #
-# mturk.properties must be found in the current file path.
-#
 # The following concepts are covered:
 # - Bulk load HITs using an input file
 # - File based HIT loading
@@ -18,7 +16,7 @@ require 'amazon/webservices/mechanical_turk_requester'
 def hasEnoughFunds?
   available = @mturk.availableFunds
   puts "Got account balance: %.2f" % available
-  return available > 0
+  return available > (0.055 * 5)
 end
 
 # Create the website category HITs.
@@ -35,12 +33,11 @@ def createSiteCategoryHITs
   # Each row represents a unique HIT.  ERB is used to merge the values into the Question template.
   input = Amazon::Util::DataReader.load( inputFile, :Tabular )
 
-  # Loading the question (QAP) file
+  # Loading the question (QuestionForm) file
   question = File.read( questionFile )
 
   # Loading the HIT properties file.  The properties file defines two system qualifications that will
-  # be used for the HIT.  The properties file can also be a Velocity template.  Currently, only
-  # the "annotation" field is allowed to be a Velocity template variable.  This allows the developer
+  # be used for the HIT.  The properties file can also be an ERB template.  This allows the developer
   # to "tie in" the input value to the results.
   props = Amazon::Util::DataReader.load( propertiesFile, :Properties )
 
@@ -72,5 +69,4 @@ def createSiteCategoryHITs
 
 end
 
-    
 createSiteCategoryHITs if hasEnoughFunds?

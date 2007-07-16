@@ -5,10 +5,10 @@
 
 # The Best Image sample application will create a HIT asking a worker
 # to choose the best of three images, given a set of criteria.
-# 
+#
 # The following concepts are covered:
-# - Using the <FormattedContent> functionality in QAP
-# - File-based QAP and HIT properties HIT loading 
+# - Using the <FormattedContent> functionality in QuestionForm
+# - File-based QuestionForm and HIT properties HIT loading
 # - Using a basic system qualification
 
 require 'amazon/webservices/mechanical_turk_requester'
@@ -22,13 +22,18 @@ require 'amazon/webservices/mechanical_turk_requester'
 def hasEnoughFunds?
   available = @mturk.availableFunds
   puts "Got account balance: %.2f" % available
-  return available > 0
+  return available > 0.055
+end
+
+def getHITUrl( hitTypeid )
+  return "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
+#  return "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
 end
 
 # Create the BestImage HIT
 def createBestImage
 
-  # Defining the location of the file containing the QAP and the properties of the HIT
+  # Defining the location of the file containing the QuestionForm and the properties of the HIT
   rootDir = File.dirname $0;
   questionFile = rootDir + "/best_image.question";
   propertiesFile = rootDir + "/best_image.properties";
@@ -36,12 +41,13 @@ def createBestImage
   # Loading configuration properties from a HIT properties file.
   # In this sample, the qualification is defined in the properties file.
   props = Amazon::Util::DataReader.load( propertiesFile, :Properties )
-  props[:Reward] = { :Amount => 0, :CurrencyCode => 'USD'}
-  #Loading the question (QAP) file.  
+  props[:Reward] = { :Amount => 0.05, :CurrencyCode => 'USD'}
+  # Loading the question (QuestionForm) file.
   question = File.read( questionFile )
   # no validation
   result = @mturk.createHIT( {:Question => question}.merge(props) )
   puts "Created HIT: #{result[:HITId]}"
+  puts "Url: #{getHITUrl( result[:HITTypeId] )}"
 end
 
 createBestImage if hasEnoughFunds?
