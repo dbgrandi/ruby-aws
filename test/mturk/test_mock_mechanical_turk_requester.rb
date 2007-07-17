@@ -2,7 +2,7 @@
 # License::   Apache License, Version 2.0
 
 require 'test/unit/testcase'
-require 'amazon/webservices/mechanical_turk_requester'
+require 'ruby-aws'
 require 'amazon/webservices/util/mock_transport'
 
 class TestMockMechanicalTurkRequester < Test::Unit::TestCase

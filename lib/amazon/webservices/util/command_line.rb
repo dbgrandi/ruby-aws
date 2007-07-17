@@ -14,7 +14,8 @@ class CommandLine
 
   SDKS = ['Mechanical Turk']
 
-  MISSING_AUTH = "You are missing authentication information required to utilize Amazon WebServices.  You will now be prompted for your <%= color('Access Key ID',BOLD) %> and your <%= color('Secret Access Key',BOLD) %>.  If you do not have this information, please log into http://www.amazonaws.com/  \n\n"
+  MISSING_AUTH = "You are missing authentication information required to utilize Amazon Web Services.  You will now be prompted for your <%= color('Access Key ID',BOLD) %> and your <%= color('Secret Access Key',BOLD) %>.  If you do not have this information, please log into http://www.amazonaws.com/  \n\n"
+  RESUME_AUTH = "Authentication information has been initialized.  Continuing... \n\n"
 
   MAIN_HELP = <<EOF
 
@@ -25,12 +26,12 @@ You got here by typing:
 
 This application currently supports the following functionality:
 
-<%= list( ['Amazon WebServices Authentication Configuration'] ) %>
+<%= list( ['Amazon Web Services Authentication Configuration'] ) %>
 You can also invoke this tool with commandline parameters.  For more information:
 
   <%= color('$ ruby-aws --help',GREEN) %>
 
-Thanks for using Amazon WebServices!
+Thanks for using Amazon Web Services!
 
 EOF
 
@@ -47,6 +48,7 @@ EOF
     if @store.get(:Auth,:AccessKeyId).nil? or @store.get(:Auth,:SecretAccessKey).nil?
       @h.say MISSING_AUTH
       getAuthConfig
+      @h.say RESUME_AUTH
     end
   end
 
@@ -70,7 +72,7 @@ EOF
 
   def useColor?
     if @store.get(:Misc,:ColorTerminal).nil?
-      if @interactive and @h.agree( "Color?" )
+      if @interactive and @h.agree( "Color? (y/n)" )
         @store.set(:Misc,:ColorTerminal,true)
       else
         @store.set(:Misc,:ColorTerminal,false)
@@ -91,7 +93,7 @@ EOF
       @h.choose do |menu|
         menu.header = "\n" + @h.color('RubyAWS',HighLine::BOLD,HighLine::RED) + " " + @h.color('Command Line Application',HighLine::BOLD) + " " + @h.color('[Interactive Mode]',HighLine::GREEN,HighLine::BOLD)
         menu.select_by = :index
-        menu.choice( 'Configure Amazon WebServices Authentication' ) do
+        menu.choice( 'Configure Amazon Web Services Authentication' ) do
           if @h.agree( "\nCurrent ID: #{@h.color(authId,HighLine::BOLD)}\nCurrent Key: #{@h.color(authKey,HighLine::BOLD)}\nDo you want to change?" )
             getAuthConfig
           end

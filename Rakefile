@@ -5,7 +5,7 @@ require 'hoe'
 require './lib/ruby-aws/version.rb'
  
 Hoe.new('ruby-aws', RubyAWS::VERSION) do |p|
-  p.rubyforge_name = 'ruby-aws'
+  p.rubyforge_name = 'Libraries for Amazon Web Services'
   p.summary = 'Ruby libraries for working with Amazon Web Services ( Mechanical Turk )'
   p.email = 'ruby-aws-develop@rubyforge.org'
   p.author = 'David J Parrott'

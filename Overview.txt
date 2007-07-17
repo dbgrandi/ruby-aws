@@ -161,7 +161,7 @@ You have successfully retrieved the results of your HITs that you loaded in bulk
 == Regenerating the GEM package
 The distributable contains a Rakefile to allow a GEM to be regenerated.  There is a dependency on having the Hoe GEM.
 
-To regeneate the GEM package:
+To regenerate the GEM package:
   * Navigate to your SDK installation directory and run the following command:
     
     rake gem
