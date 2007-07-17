@@ -9,7 +9,7 @@
 # - Bulk load HITs using an input file
 # - File based HIT loading
 
-require 'amazon/webservices/mechanical_turk_requester'
+require 'ruby-aws'
 @mturk = Amazon::WebServices::MechanicalTurkRequester.new
 
 # Check to see if your account has sufficient funds

@@ -35,9 +35,12 @@ def createHelloWorld
   puts "Url: #{getHITUrl( result[:HITTypeId] )}"
 end
 
-def getHITUrl( hitTypeid )
-  return "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
-#  return "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
+def getHITUrl( hitTypeId )
+  if @mturk.host =~ /sandbox/
+    "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
+  else
+    "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
+  end
 end
 
 # Check to see if your account has sufficient funds

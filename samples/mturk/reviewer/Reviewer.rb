@@ -16,7 +16,7 @@
 # - Output results for several HITs to a file
 # - Approve assignments
 
-require 'amazon/webservices/mechanical_turk_requester'
+require 'ruby-aws'
 @mturk = Amazon::WebServices::MechanicalTurkRequester.new :Config => File.join( File.dirname(__FILE__), 'mturk.yml' )
 
 # Prints the submitted results of HITs when provided with a .success file.

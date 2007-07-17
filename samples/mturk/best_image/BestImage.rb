@@ -11,7 +11,7 @@
 # - File-based QuestionForm and HIT properties HIT loading
 # - Using a basic system qualification
 
-require 'amazon/webservices/mechanical_turk_requester'
+require 'ruby-aws'
 @mturk = Amazon::WebServices::MechanicalTurkRequester.new :Host => :Sandbox
 
 # Use this line instead if you want to talk to Prod
@@ -25,9 +25,12 @@ def hasEnoughFunds?
   return available > 0.055
 end
 
-def getHITUrl( hitTypeid )
-  return "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
-#  return "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
+def getHITUrl( hitTypeId )
+  if @mturk.host =~ /sandbox/
+    "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
+  else
+    "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
+  end
 end
 
 # Create the BestImage HIT
