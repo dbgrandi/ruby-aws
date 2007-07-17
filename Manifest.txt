@@ -2,7 +2,6 @@ History.txt
 LICENSE.txt
 Manifest.txt
 NOTICE.txt
-Overview.txt
 README.txt
 Rakefile
 bin/ruby-aws
