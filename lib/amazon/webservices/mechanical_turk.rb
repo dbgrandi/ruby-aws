@@ -21,7 +21,7 @@ class MechanicalTurk
   def initialize(args={})
     name = args[:Name] || 'AWSMechanicalTurkRequester'
     software = args.has_key?(:SoftwareName) ? "#{SOFTWARE_NAME}, #{args[:SoftwareName]}" : "#{SOFTWARE_NAME}"
-    host = case args[:Host].to_s
+    @host = case args[:Host].to_s
       when /^Prod/i
         PROD
       when /^Sandbox/i,""
@@ -29,7 +29,7 @@ class MechanicalTurk
       else
         args[:Host].to_s
       end
-    newargs = args.merge( :Name => name, :SoftwareName => software, :Host => host )
+    newargs = args.merge( :Name => name, :SoftwareName => software, :Host => @host )
     transport = case args[:Transport]
       when :SOAP,/^SOAP/i
         getSOAPTransport(newargs)
@@ -49,6 +49,8 @@ class MechanicalTurk
     log "Generating relay with following args: #{newargs.inspect}"
     @relay = allowOverride('Relay',args[:Relay],newargs) { |a| Amazon::WebServices::Util::AmazonAuthenticationRelay.new(a) }
   end
+
+  attr_accessor :host
 
   def method_missing(method,*args)
     log "Sending request: #{method} #{args.inspect}"
