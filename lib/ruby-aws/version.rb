@@ -4,5 +4,5 @@
 module RubyAWS
   SRC_PATH = " $URL$ "
   SRC_PATH =~ /tags\/(\d+\.\d+\.\d+)\/.*\/ruby-aws\/version.rb/
-  VERSION = ($1 || "0.0.0").freeze
+  VERSION = ($1 || "0.0.1").freeze
 end
