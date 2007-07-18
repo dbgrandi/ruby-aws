@@ -51,6 +51,9 @@ def createBestImage
   result = @mturk.createHIT( {:Question => question}.merge(props) )
   puts "Created HIT: #{result[:HITId]}"
   puts "Url: #{getHITUrl( result[:HITTypeId] )}"
+
+  # save the HIT Id to a file so we don't lose it...
+  Amazon::Util::DataReader.save( File.join( rootDir, "hits_created" ), [{:HITId => result[:HITId] }], :Tabular )
 end
 
 createBestImage if hasEnoughFunds?

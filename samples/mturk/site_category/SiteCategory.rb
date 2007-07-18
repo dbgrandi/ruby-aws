@@ -19,6 +19,14 @@ def hasEnoughFunds?
   return available > (0.055 * 5)
 end
 
+def getHITUrl( hitTypeId )
+  if @mturk.host =~ /sandbox/
+    "http://workersandbox.mturk.com/mturk/preview?groupId=#{hitTypeId}" # Sandbox Url
+  else
+    "http://mturk.com/mturk/preview?groupId=#{hitTypeId}" # Production Url
+  end
+end
+
 # Create the website category HITs.
 def createSiteCategoryHITs
 
@@ -61,6 +69,11 @@ def createSiteCategoryHITs
   puts "--[Done Loading HITs]----------"
   puts "  Total load time: #{ endTime - startTime } seconds."
 
+  hit_ids = hits[:Created].collect {|h| h[:HITId] }
+  hit_type_id = hits[:Created].first[:HITTypeId]
+
+  puts "  Created HITs: #{hit_ids.join(' ')}"
+  puts "  Url: #{getHITUrl( hit_type_id )}"
 
   # We'll save the results to hits.success and hits.failure
   Amazon::Util::DataReader.save( rootDir + "/hits.success", hits[:Created], :Tabular )

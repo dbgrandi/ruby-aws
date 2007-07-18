@@ -72,7 +72,7 @@ EOF
 
   def useColor?
     if @store.get(:Misc,:ColorTerminal).nil?
-      if @interactive and @h.agree( "Color? (y/n)" )
+      if @interactive and @h.agree( "Should the console application use color? (y/n)" )
         @store.set(:Misc,:ColorTerminal,true)
       else
         @store.set(:Misc,:ColorTerminal,false)
