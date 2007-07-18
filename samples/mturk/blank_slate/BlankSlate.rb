@@ -3,7 +3,7 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
-# The BlankSlate sample application disposes all of your HITs on sanbox
+# The BlankSlate sample application disposes all of your HITs on sandbox
 
 require 'ruby-aws'
 @mturk = Amazon::WebServices::MechanicalTurkRequester.new :Host => :Sandbox
@@ -35,7 +35,7 @@ def purge
       forceExpire id
       dispose id
     rescue => e
-      puts e.message
+      puts e.inspect
     end
   end
   

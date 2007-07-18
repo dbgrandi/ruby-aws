@@ -33,6 +33,7 @@ lib/ruby-aws/version.rb
 samples/mturk/best_image/BestImage.rb
 samples/mturk/best_image/best_image.properties
 samples/mturk/best_image/best_image.question
+samples/mturk/blank_slate/BlankSlate.rb
 samples/mturk/helloworld/MTurkHelloWorld.rb
 samples/mturk/helloworld/mturk.yml
 samples/mturk/reviewer/Reviewer.rb
