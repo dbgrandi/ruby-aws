@@ -1,0 +1,140 @@
+= Contributing to Libraries for Amazon Web Services (ruby-aws)
+
+Gotten your hands dirty with ruby-aws and looking for more?
+Found a bug that really needs scratching?
+Added a new feature that others might find valuable?
+
+We'd love to have you contribute to ruby-aws!
+
+== The Story
+
+Rather than lead out with a bunch of rules and process, we'll tell you a story
+of how we expect things to work.  If you like stories, continue reading.  If
+you'd rather just read the rules, feel free to skip to the next section.
+First, the players:
+
+[Allen] One of the Lead Developers on the ruby-aws project.
+[Barry] A talented developer who has just discovered the ruby-aws project.
+
+Barry is very impressed with ruby-aws and decides to use it to support a new
+business endeavour he has dreamt up.  He installs the gem and off he goes.  34
+hours into designing his new application, Barry starts to see some odd
+behavior and determines that it is a bug in ruby-aws ( the defrobulator isn't
+catching all frobs ).  Barry immediately files a bug on ruby-aws's bug
+tracker.  Being the enterprising developer that he is, Barry is confident that
+he could fix the bug and mentions this in the bug report.
+Allen reads the bug report, and since tuning the defrobulator involves some
+complex debugging and Barry is very enthusiastic, Allen invites Barry to join
+the ruby-aws team, mentioning that we're always happy to accept contributors.
+
+After Barry has completed the onboarding process, he notes that the bug he
+filed was labeled with id #213.  He creates a branch in subversion for his bug fix:
+  svn cp svn+ssh://barry@rubyforge.org/var/svn/ruby-aws/trunk \
+         svn+ssh://barry@rubyforge.org/var/svn/ruby-aws/branches/Bug-213
+Barry then proceeds to make his changes to this branch.  First, he adds a
+test_CatchTheLastFrob.rb unit test which will clearly show what is broken.
+Barry then checks in this test.  Over the next few hours, Barry iteratively
+works on getting that test to pass, while not breaking any of the other
+pre-existing tests.  When he is finished, 17 revisions later, he updates the
+ticket, adding a [CR] tag to the beginning of the Summary, changing priority
+to 5 and unassigning himself.
+
+When Allen sees the unassigned ticket with a CodeReview tag, he sets aside the
+new feature work he was working on, assigns himself the CodeReview ticket, and
+checks out a fresh copy of Trunk.  He then merges in Barry's branch.
+  svn merge svn+ssh://allen@rubyforge.org/var/svn/ruby-aws/branches/Bug-213 -r 22:39
+After verifying that it merged cleanly, Allen kicks off all the tests.  Once
+the tests all pass, Allen carefully reviews the diff and notices some places
+where the code misses an edge case, as well as the absence of a few critical
+tests.  Allen re-assigns the ticket to Barry with his comments.
+
+After Barry makes the requested revisions, he again unassigns himself from the
+ticket and Allen, after completing the code review process a second time,
+decides that the code is clean and well written, and has a sufficient level of
+testing. Allen then commits the change to Trunk.
+
+When the next version of ruby-aws is released, Barry is excited to see his
+bugfix has been incorporated.
+
+== Development Process
+
+Big Picture -- Branch-Based Development ( similar to {DivMod's UQDS}[http://www.divmod.org/trac/wiki/UltimateQualityDevelopmentSystem])
+
+Once you join the project as a developer, you will be given commit access to
+branches. Please adhere to the following guidelines:
+
+* All development should be done in branches.
+* All development should be associated with a Bug or Feature Request in the
+  project's tracker.
+* Branches and Tickets should have a One-to-One relationship.
+* Suggested branch naming policy:
+    //branches/(Bug|Feature)-$tracker_id/
+* Code changes ready to be merged should:
+  * Make sense
+  * Include relevant unit tests
+  * Include relevant documentation
+  * Update pre-existing documentation that was affected by the change
+  * Resolve the issue or add the feature in question
+  * Generate no merge conflicts when the svn merge command is run to test
+    merging of the branch into Trunk
+  * Pass all unit tests
+  * Include no unnecessary changes
+  * Attempt to maintain the general style of the codebase
+
+== Merging to Trunk
+
+* Only a Lead Developer will have permissions to merge a patch to trunk.
+* Patches must be associated with a Bug or Feature Request in the project's
+  Tracker.
+* Only one merge will be done per Bug or Feature Request, when the task is
+  complete and tests pass.
+* When a developer feels their solution is complete, they should
+  * prepend a [CR] tag to the beginning of the ticket's Summary
+  * set the priority to 5, and
+  * unassign themselves from the ticket
+* A Patch branch must merge cleanly into the current HEAD of Trunk.  If it
+  does not, the ticket will be re-assigned to the original developer for
+  cleanup.
+* After applying a patch, all tests must pass.  No change should ever be
+  made to Trunk which results in test failures.
+* The Lead Developer will review the code to ensure a high level of quality.
+  If they determine the code is not yet ready to be merged to mainline, they
+  will paste their comments into the ticket and reassign it to the original
+  developer.
+* Once the branch has been successfully applied to mainline, the ticket will
+  be closed the the branch will be deleted.
+
+== Onboarding Process
+
+If you'd like to join the project, please send email to
+mailto:ruby-aws-onboarding@rubyforge.org and we'll get you started.
+
+== Legal Details
+
+=== Ownership Authority ( copyright )
+
+Copyright Holder:: Amazon Technologies, Inc.
+
+This project's current policy requires it to maintain a single copyright
+holder.  All contributions to the project must be assigned to this copyright
+holder.  This decision was made primarily to simplify legal issues surrounding
+licensing and to enable unhindered use for all developers wishing to utilize
+this library to access Amazon Web Services.
+
+=== Contributor Statement
+
+People who contribute non-trivial patches or have been granted commit access
+to the ruby-aws source repository agree to the following statement:
+
+I, __(contributor's name)__ agree to the following statements concerning my
+contributions to the "Libraries for Amazon Web Services" (ruby-aws) project:
+
+* These contributions are my own work and that I have full ownership authority
+  over them.
+* I am unaware of any patent or patent application that would prevent free use
+  of my contribution.
+* I unconditionally assign my copyright for these contributions to
+  Amazon Technologies, Inc.
+
+Full legal name and address:
+(your name and address here)
