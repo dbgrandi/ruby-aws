@@ -1,3 +1,8 @@
+== PRE_RELEASE
+
+=== 1 major enhancement
+* Updated for Mechanical Turk's 2007-06-21 WSDL (updateHIT, blockWorker)
+
 == 1.0.0 / 2007-07-13
 
 === 1 major enhancement

@@ -12,7 +12,7 @@ module WebServices
 
 class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
 
-  WSDL_VERSION = "2007-03-12"
+  WSDL_VERSION = "2007-06-21"
 
   ABANDONMENT_RATE_QUALIFICATION_TYPE_ID = "00000000000000000070";
   APPROVAL_RATE_QUALIFICATION_TYPE_ID = "000000000000000000L0";
@@ -38,6 +38,7 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   serviceCall :ExtendHIT, :ExtendHITResult
   serviceCall :ForceExpireHIT, :ForceExpireHITResult
   serviceCall :GetHIT, :HIT, { :ResponseGroup => %w( Minimal HITDetail HITQuestion HITAssignmentSummary ) }
+  serviceCall :ChangeHITTypeOfHIT, :ChangeHITTypeOfHITResult
   
   serviceCall :SearchHITs, :SearchHITsResult
   serviceCall :GetReviewableHITs, :GetReviewableHITsResult
@@ -76,6 +77,8 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   serviceCall :SetHITTypeNotification, :SetHITTypeNotificationResult
   serviceCall :SetWorkerAcceptLimit, :SetWorkerAcceptLimitResult
   serviceCall :GetWorkerAcceptLimit, :GetWorkerAcceptLimitResult
+  serviceCall :BlockWorker, :BlockWorkerResult
+  serviceCall :UnblockWorker, :BlockWorkerResult
 
   serviceCall :GetFileUploadURL, :GetFileUploadURLResult
   serviceCall :GetAccountBalance, :GetAccountBalanceResult
@@ -95,12 +98,12 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
                          :Version => WSDL_VERSION )
   end
   
-  # Create a series of similar hits, sharing common parameters.  Utilizes HitType
+  # Create a series of similar HITs, sharing common parameters.  Utilizes HITType
   # * hit_template is the array of parameters to pass to createHIT.
   # * question_template will be passed as a template into ERB to generate the :Question parameter
   # * the RequesterAnnotation parameter of hit_template will also be passed through ERB
   # * hit_data_set should consist of an array of hashes defining unique instance variables utilized by question_template
-  def createHITs( hit_template, question_template, hit_data_set)
+  def createHITs( hit_template, question_template, hit_data_set )
     hit_template = hit_template.dup
     lifetime = hit_template[:LifetimeInSeconds]
     annotation_template = hit_template[:RequesterAnnotation]
@@ -128,7 +131,69 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
     return :Created => created, :Failed => failed
   end
   
-  def getHITResults(list)
+  # Update a series of HITs to belong to a new HITType
+  # * hit_template is the array of parameters to pass to registerHITType
+  # * hit_ids is a list of HITIds (strings)
+  def updateHITs( hit_template, hit_ids )
+    hit_template = hit_template.dup
+    hit_template.delete :LifetimeInSeconds
+    hit_template.delete :RequesterAnnotation
+    
+    hit_type_id = registerHITType( hit_template )[:HITTypeId]
+
+    updated = []
+    failed = []
+    hit_ids.each do |hit_id|
+      begin
+        changeHITTypeOfHIT( :HITId => hit_id, :HITTypeId => hit_type_id )
+        updated << hit_id
+      rescue => e
+        failed << { :HITId => hit_id, :Error => e.message }
+      end
+    end
+    return :Updated => updated, :Failed => failed
+  end
+
+
+  # Update a HIT with new properties.
+  # hit_id:: Id of the HIT to update
+  # hit_template:: hash ( parameter => value ) of parameters to update
+  #
+  # Acceptable attributes:
+  # * Title
+  # * Description
+  # * Keywords
+  # * Reward
+  # * QualificationRequirement
+  # * AutoApprovalDelayInSeconds
+  # * AssignmentDurationInSeconds
+  #
+  # Behind the scenes, this function retrieves the HIT, merges the HITs
+  # current attributes with any you specify, and registers a new HIT
+  # Template.  It then uses the new ChangeHITTypeOfHIT function to move
+  # your HIT to the newly-created HIT Template.
+  def updateHIT( hit_id, hit_template )
+    hit_template = hit_template.dup
+
+    hit = getHIT( :HITId => hit_id )
+
+    props = %w( Title Description Keywords Reward
+                QualificationRequirement
+                AutoApprovalDelayInSeconds
+                AssignmentDurationInSeconds
+              ).collect {|str| str.to_sym }
+
+    props.each do |p|
+      hit_template[p] = hit[p] if hit_template[p].nil?
+    end
+
+    hit_type_id = registerHITType( hit_template )[:HITTypeId]
+
+    changeHITTypeOfHIT( :HITId => hit_id, :HITTypeId => hit_type_id )
+  end
+
+  
+  def getHITResults( list )
     results = []
     list.each do |h|
       hit = getHIT( :HITId => h[:HITId] )
