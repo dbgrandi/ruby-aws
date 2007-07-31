@@ -1,7 +1,8 @@
 == PRE_RELEASE
 
-=== 1 major enhancement
+=== 2 major enhancements
 * Updated for Mechanical Turk's 2007-06-21 WSDL (updateHIT, blockWorker)
+* Added enhanced error handling system with retry logic
 
 == 1.0.0 / 2007-07-13
 

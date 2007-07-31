@@ -4,6 +4,7 @@
 require 'ruby-aws'
 require 'amazon/util/logging'
 require 'amazon/webservices/util/amazon_authentication_relay'
+require 'amazon/webservices/mturk/mechanical_turk_error_handler'
 require 'amazon/webservices/util/validation_exception'
 
 module Amazon
@@ -47,14 +48,17 @@ class MechanicalTurk
       end
     newargs.merge!( :Transport => transport )
     log "Generating relay with following args: #{newargs.inspect}"
-    @relay = allowOverride('Relay',args[:Relay],newargs) { |a| Amazon::WebServices::Util::AmazonAuthenticationRelay.new(a) }
+    relay = allowOverride('Relay',args[:Relay],newargs) { |a| Amazon::WebServices::Util::AmazonAuthenticationRelay.new(a) }
+    newargs.merge!( :Relay => relay )
+    log "Generating error handler with the following args: #{newargs.inspect}"
+    @errorHandler = allowOverride('ErrorHandler',args[:ErrorHandler],newargs) { |a| Amazon::WebServices::MTurk::MechanicalTurkErrorHandler.new(a) }
   end
 
   attr_accessor :host
 
   def method_missing(method,*args)
     log "Sending request: #{method} #{args.inspect}"
-    validateResponse @relay.send(method,*args)
+    @errorHandler.dispatch(method,*args)
   end
 
   private
@@ -101,20 +105,6 @@ class MechanicalTurk
 
   def findRestEndpoint( name, host )
     "http://#{host}/?Service=#{name}"
-  end
-
-  RESULT_PATTERN = /Result/
-  ACCEPTABLE_RESULTS = %w( HIT Qualification QualificationType QualificationRequest Information )
-
-  def validateResponse(response)
-    log "Validating response: #{response.inspect}"
-    raise Util::ValidationException.new(response) unless response[:OperationRequest][:Errors].nil?
-    resultTag = response.keys.find {|r| r.to_s =~ RESULT_PATTERN or ACCEPTABLE_RESULTS.include?( r.to_s ) }
-    raise Util::ValidationException.new(response, "Didn't get back an acceptable result tag (got back #{response.keys.join(',')})") if resultTag.nil?
-    log "using result tag <#{resultTag}>"
-    result = response[resultTag]
-    raise Util::ValidationException.new(response) unless result[:Request][:Errors].nil?
-    response
   end
 
 end # MTurk

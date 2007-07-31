@@ -34,7 +34,7 @@ def purge
     begin
       forceExpire id
       dispose id
-    rescue => e
+    rescue Exception => e
       puts e.inspect
     end
   end

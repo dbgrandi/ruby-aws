@@ -55,8 +55,8 @@ class MockTransport
   def method_missing(method,*args)
     raise "only support one parameter" unless args.size <= 1
     the_method = MethodCall.new( method, args[0] )
-    listen_result = @listener.call( the_method ) unless @listener.nil?
     @call_buffer << the_method
+    listen_result = @listener.call( the_method ) unless @listener.nil?
     response = @mock_reply.dup
     response[:MockResult][:Request] = the_method.request unless response[:MockResult].nil?
     response.merge!(listen_result) if listen_result.is_a? Hash
