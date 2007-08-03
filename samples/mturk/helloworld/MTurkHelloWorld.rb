@@ -3,6 +3,8 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
+begin ; require 'rubygems' ; rescue LoadError ; end
+
 # The MTurk Hello World sample application creates a simple HIT via Libraries for Amazon Web Services.
 
 require 'ruby-aws'

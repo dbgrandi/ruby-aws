@@ -3,6 +3,8 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
+begin ; require 'rubygems' ; rescue LoadError ; end
+
 # The BlankSlate sample application disposes all of your HITs on sandbox
 
 require 'ruby-aws'

@@ -3,6 +3,8 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
+begin ; require 'rubygems' ; rescue LoadError ; end
+
 # The Reviewer sample application will retrieve the completed assignments for a given HIT,
 # output the results and approve the assignment.
 #

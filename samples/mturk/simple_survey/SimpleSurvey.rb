@@ -3,6 +3,8 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
+begin ; require 'rubygems' ; rescue LoadError ; end
+
 # The Simple Survey sample application will create a HIT asking a worker to indicate their
 # political party preferences.
 #

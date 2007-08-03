@@ -3,6 +3,8 @@
 # Copyright:: Copyright (c) 2007 Amazon Technologies, Inc.
 # License::   Apache License, Version 2.0
 
+begin ; require 'rubygems' ; rescue LoadError ; end
+
 # The Site Category sample application will create 5 HITs asking workers to categorize websites into predefined categories.
 #
 # The following concepts are covered:
