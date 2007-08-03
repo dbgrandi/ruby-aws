@@ -11,7 +11,7 @@ Hoe.new('ruby-aws', RubyAWS::VERSION) do |p|
   p.author = 'David J Parrott'
   p.description = p.paragraphs_of('README.txt', 2..3).join("\n\n")
   p.url = "http://rubyforge.org/projects/ruby-aws/"
-  p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
+  p.changes = p.paragraphs_of('History.txt', 0..3).join("\n\n")
   p.extra_deps << ['highline','>= 1.2.7']
 end
 

@@ -20,6 +20,16 @@ def forceExpire(id)
   puts "OK"
 end
 
+def approveRemainingAssignments(id)
+  print "Approving remaining assignments for HIT #{id}: "
+  count = 0
+  @mturk.getAssignmentsForHITAll( :HITId => id ).each do |assignment|
+    @mturk.approveAssignment :AssignmentId => assignment[:AssignmentId]
+    count += 1
+  end
+  puts "OK (Approved #{count})"
+end
+
 def dispose(id)
   print "Disposing HIT #{id}: "
   @mturk.disposeHIT( :HITId => id )
@@ -35,8 +45,10 @@ def purge
   hit_ids.each do |id|
     begin
       forceExpire id
+      approveRemainingAssignments id
       dispose id
     rescue Exception => e
+      raise e if e.is_a? Interrupt
       puts e.inspect
     end
   end
