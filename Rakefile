@@ -13,6 +13,8 @@ Hoe.new('ruby-aws', RubyAWS::VERSION) do |p|
   p.url = "http://rubyforge.org/projects/ruby-aws/"
   p.changes = p.paragraphs_of('History.txt', 0..2).join("\n\n")
   p.extra_deps << ['highline','>= 1.2.7']
+  p.need_tar = true
+  p.need_zip = true
 end
 
 # vim: syntax=ruby

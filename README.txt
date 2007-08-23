@@ -18,7 +18,7 @@ Services like Amazon Mechanical Turk.  The goals of the libraries are:
   @mturk = Amazon::WebServices::MechanicalTurkRequester.new
   puts "I have $#{@mturk.availableFunds} in Sandbox"
   @mturk_prod = Amazon::WebServices::MechanicalTurkRequester.new :Host => :Production
-  puts "I have $#{@mturk.availableFunds} in Production"
+  puts "I have $#{@mturk_prod.availableFunds} in Production"
 
 For more in-depth example code, check out the samples folder included in this
 distribution.
