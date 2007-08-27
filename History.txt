@@ -1,6 +1,7 @@
 == PreRelease
 
-== 2 minor enhancements
+== 3 minor enhancements
+* createHITs now supports MaxAssignments correctly
 * Generate .zip file
 * Documentation correction
 

@@ -50,7 +50,51 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
   end
 
   def testCreateHITs
-    # TODO
+    @mock.listen do |call|
+      case call.name
+      when :RegisterHITType
+        {:RegisterHITTypeResult => {:HITTypeId => 'mockHITType', :Request => {} } }
+      else
+        {}
+      end
+    end
+
+    template = { :Description => 'foo bar', :MaxAssignments => 2, :RequesterAnnotation => "Funky <%= @jazz %>" }
+    question = "who what <%= @where %>"
+    data_set = [ { :jazz => "LaLa", :where => 1}, {:jazz => nil, :where => 2, :MaxAssignments => 1}, {:jazz => "Poodle", :where => nil} ]
+
+    results = @mturk.createHITs( template, question, data_set )
+
+    assert_equal [], results[:Failed]
+    assert_equal 3, results[:Created].size
+
+    ht = @mock.next
+    assert_equal :RegisterHITType, ht.name
+    assert_equal 'foo bar', ht.request[:Description]
+    assert_equal nil, ht.request[:MaxAssignments]
+
+    h1 = @mock.next
+    assert_equal :CreateHIT, h1.name
+    assert_equal 'mockHITType', h1.request[:HITTypeId]
+    assert_equal 2, h1.request[:MaxAssignments]
+    assert_equal 'Funky LaLa', h1.request[:RequesterAnnotation]
+    assert_equal 'who what 1', h1.request[:Question]
+
+    h2 = @mock.next
+    assert_equal :CreateHIT, h2.name
+    assert_equal 'mockHITType', h2.request[:HITTypeId]
+    assert_equal 1, h2.request[:MaxAssignments]
+    assert_equal 'Funky ', h2.request[:RequesterAnnotation]
+    assert_equal 'who what 2', h2.request[:Question]
+
+    h3 = @mock.next
+    assert_equal :CreateHIT, h3.name
+    assert_equal 'mockHITType', h3.request[:HITTypeId]
+    assert_equal 2, h3.request[:MaxAssignments]
+    assert_equal 'Funky Poodle', h3.request[:RequesterAnnotation]
+    assert_equal 'who what ', h3.request[:Question]
+
+    assert_equal nil, @mock.next
   end
 
   def testGetHITResults

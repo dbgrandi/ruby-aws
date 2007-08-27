@@ -21,7 +21,7 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   SUBMISSION_RATE_QUALIFICATION_TYPE_ID = "00000000000000000000";
   LOCALE_QUALIFICATION_TYPE_ID = "00000000000000000071";
 
-  serviceCall :RegisterHITType, :RegisterHITTypeResult, { :MaxAssignments => 1,
+  serviceCall :RegisterHITType, :RegisterHITTypeResult, {
                                                           :AssignmentDurationInSeconds => 60*60,
                                                           :AutoApprovalDelayInSeconds => 60*60*24*7
                                                         }
@@ -106,8 +106,10 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   def createHITs( hit_template, question_template, hit_data_set )
     hit_template = hit_template.dup
     lifetime = hit_template[:LifetimeInSeconds]
+    numassignments_template = hit_template[:MaxAssignments]
     annotation_template = hit_template[:RequesterAnnotation]
     hit_template.delete :LifetimeInSeconds
+    hit_template.delete :MaxAssignments
     hit_template.delete :RequesterAnnotation
     
     ht = registerHITType( hit_template )[:HITTypeId]
@@ -118,9 +120,11 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
       begin
         b = Amazon::Util::Binder.new( hit_data )
         annotation = b.erb_eval( annotation_template )
+        numassignments = b.erb_eval( numassignments_template.to_s ).to_i
         question = b.erb_eval( question_template )
         created << self.createHIT( :HITTypeId => ht, 
                                    :LifetimeInSeconds => lifetime, 
+                                   :MaxAssignments => ( hit_data[:MaxAssignments] || numassignments || 1 ),
                                    :Question => question, 
                                    :RequesterAnnotation => ( hit_data[:RequesterAnnotation] || annotation || "") 
                                  )
