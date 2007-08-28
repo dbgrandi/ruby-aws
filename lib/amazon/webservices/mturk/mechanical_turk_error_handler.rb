@@ -53,7 +53,7 @@ class MechanicalTurkErrorHandler
       when :Ignore
         return :IgnoredError => error
       when :Unknown
-        raise Util::UnknownResultException.new( error, method, *args )
+        raise Util::UnknownResultException.new( error, method, args )
       when :Fail
         # fall through
       else
