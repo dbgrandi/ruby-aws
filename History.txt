@@ -1,3 +1,10 @@
+== PreRelease
+
+=== 0 major enhancements
+
+=== 1 minor enhancements
+* Enhanced test coverage
+
 == 1.1.1 / 2007-08-28
 
 === 0 major enhancements

@@ -17,11 +17,6 @@ class UserDataStore
     loadConfig
   end
 
-  def destroy
-    save
-    super
-  end
-
   def get(namespace,property)
     ns = sanitizeKey(namespace)
     @data[ns][property]
@@ -87,6 +82,7 @@ class UserDataStore
   end
 
   def findHomeDir
+    return ENV['TEST_HOME_OVERRIDE'] unless ENV['TEST_HOME_OVERRIDE'].nil?
     return Gem::user_home if defined? Gem
     return ENV['HOME'] unless ENV['HOME'].nil?
     return ENV['USERPROFILE'] unless ENV['USERPROFILE'].nil?

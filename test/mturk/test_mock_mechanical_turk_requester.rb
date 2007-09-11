@@ -51,6 +51,36 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
 
   def testCreateHITs
     @mock.listen do |call|
+      {:RegisterHITTypeResult => {:HITTypeId => 'specialType', :Request => {}} } if call.name == :RegisterHITType
+    end
+
+    template = { :Arg1 => 'Param2', :RequesterAnnotation => 'blub' }
+    question_template = "blarg <%= @zip %> foo"
+    data_set = [ { :zip => 'poodle' }, { :zip => 'fizz' } ]
+
+    result = @mturk.createHITs( template, question_template, data_set )
+
+    assert_equal 2, result[:Created].size
+    assert_equal 0, result[:Failed].size
+
+    register_call = @mock.next
+    assert_equal :RegisterHITType, register_call.name
+    assert_equal( 
+                 { :AssignmentDurationInSeconds=>3600, # default
+                   :AutoApprovalDelayInSeconds=>604800, # default
+                   :Arg1=>"Param2" # there's our arg!
+                 },
+                 register_call.request )
+    expected_questions = [ "blarg poodle foo", "blarg fizz foo" ]
+    @mock.each do |call|
+      assert_equal :CreateHIT, call.name
+      assert_equal 'specialType', call.request[:HITTypeId]
+      assert_equal call.request[:Question], expected_questions.delete( call.request[:Question] )
+    end
+  end
+
+  def testCreateHITsWithMaxAssignment
+    @mock.listen do |call|
       case call.name
       when :RegisterHITType
         {:RegisterHITTypeResult => {:HITTypeId => 'mockHITType', :Request => {} } }
@@ -97,6 +127,24 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
     assert_equal nil, @mock.next
   end
 
+  def testCreatHITsWithFailure
+    @mock.listen do |call|
+      raise "Mock hates you" if call.request[:Question] and call.request[:Question] =~ /poodle/
+      {:RegisterHITTypeResult => {:HITTypeId => 'specialType', :Request => {}} } if call.name == :RegisterHITType
+    end
+
+    template = { :Arg1 => 'Param2', :RequesterAnnotation => 'blub' }
+    question_template = "blarg <%= @zip %> foo"
+    data_set = [ { :zip => 'poodle' }, { :zip => 'fizz' } ]
+
+    result = @mturk.createHITs( template, question_template, data_set )
+
+    assert_equal 1, result[:Created].size
+    assert_equal 1, result[:Failed].size
+
+    assert_equal "Mock hates you", result[:Failed].first[:Error]
+  end
+
   def testGetHITResults
     # need to set up a listener to feed back hit and assignment attributes for testing results and work with pagination
     assignments_per_hit = 31
@@ -135,6 +183,25 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
 
   def testAvailableFunds
     # TODO
+  end
+
+  def testSimplifyAnswer
+    rawAnswer = <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionFormAnswers xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionFormAnswers.xsd">
+  <Answer>
+    <QuestionIdentifier>1</QuestionIdentifier>
+    <FreeText>yes, sir</FreeText>
+  </Answer>
+  <Answer>
+    <QuestionIdentifier>pudding</QuestionIdentifier>
+    <SelectionIdentifier>B+</SelectionIdentifier>
+  </Answer>
+</QuestionFormAnswers>
+EOF
+    expected = { 1 => 'yes, sir', 'pudding' => 'B+' }
+    result = @mturk.simplifyAnswer( rawAnswer )
+    assert_equal expected, result
   end
 
 end

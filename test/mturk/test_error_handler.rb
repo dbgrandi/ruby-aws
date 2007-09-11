@@ -70,5 +70,66 @@ class TestErrorHandler < Test::Unit::TestCase
   end
 
 
+  def testRuntimeError
+    @mock.listen do |call|
+      raise "Blah"
+    end
+
+    begin
+      @mturk.searchHITs
+      fail "Should have thrown an exception"
+    rescue RuntimeError => e
+      assert_equal "Blah", e.to_s
+    end
+  end
+
+  def testRuntimeErrorThrottled
+     @mock.listen do |call|
+      raise "Throttled"
+    end
+
+    begin
+      @mturk.searchHITs
+      fail "Should have thrown an exception"
+    rescue RuntimeError => e
+      assert_equal "Throttled", e.to_s
+    end
+  end
+
+  def testSOAPFaultError
+    arg = (Struct.new :faultcode, :faultstring, :faultactor, :detail).new 
+    arg.faultcode = (Struct.new :data).new 'aws:blarg'
+    arg.faultstring = (Struct.new :data).new 'blarg blarg blarg'
+    s = SOAP::FaultError.new( arg )
+    
+    @mock.listen do |call|
+      raise s
+    end
+
+    begin
+      @mturk.searchHITs
+      fail "Should have thrown an exception"
+    rescue SOAP::FaultError => e
+      assert_equal s, e
+    end
+  end
+
+  def testSOAPFaultErrorThrottled
+    arg = (Struct.new :faultcode, :faultstring, :faultactor, :detail).new 
+    arg.faultcode = (Struct.new :data).new 'aws:Server.ServiceUnavailable'
+    arg.faultstring = (Struct.new :data).new 'Hey, give us a break!'
+    s = SOAP::FaultError.new( arg )
+    
+    @mock.listen do |call|
+      raise s
+    end
+
+    begin
+      @mturk.searchHITs
+      fail "Should have thrown an exception"
+    rescue SOAP::FaultError => e
+      assert_equal s, e
+    end
+  end
 
 end

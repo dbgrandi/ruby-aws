@@ -55,7 +55,7 @@ class MechanicalTurkErrorHandler
       when :Unknown
         raise Util::UnknownResultException.new( error, method, args )
       when :Fail
-        # fall through
+        raise error
       else
         raise "Unknown error handling method: #{handleError( error,method )}"
       end
@@ -84,7 +84,7 @@ class MechanicalTurkErrorHandler
       when "aws:Server.ServiceUnavailable"
         return :RetryWithBackoff
       else
-        return :Unkown
+        return :Unknown
       end
     when 'Amazon::WebServices::Util::ValidationException'
       return :Fail

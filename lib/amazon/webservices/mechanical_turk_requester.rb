@@ -181,10 +181,8 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
 
     hit = getHIT( :HITId => hit_id )
 
-    props = %w( Title Description Keywords Reward
-                QualificationRequirement
-                AutoApprovalDelayInSeconds
-                AssignmentDurationInSeconds
+    props = %w( Title Description Keywords Reward QualificationRequirement
+                AutoApprovalDelayInSeconds AssignmentDurationInSeconds
               ).collect {|str| str.to_sym }
 
     props.each do |p|

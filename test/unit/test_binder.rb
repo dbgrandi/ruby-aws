@@ -4,7 +4,7 @@
 require 'test/unit/testcase'
 require 'amazon/util/binder'
                                                                                                                                                                                       
-class TestBinder< Test::Unit::TestCase
+class TestBinder < Test::Unit::TestCase
   include Amazon::Util
 
   SAMPLE_VARS = { :a => 'pudding', :b => 'pie', :c => 'cheesecake' }

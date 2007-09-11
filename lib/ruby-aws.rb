@@ -3,11 +3,7 @@
 
 require 'ruby-aws/version'
 
-begin
-  require 'rubygems'
-rescue LoadError => e
-  # ignore failure to load rubygems
-end
+begin ; require 'rubygems' ; rescue LoadError => e ; end
 
 require 'amazon/webservices/mechanical_turk_requester'
 
