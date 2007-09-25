@@ -2,6 +2,7 @@
 # License::   Apache License, Version 2.0
 
 require 'erb'
+require 'monitor'
 require 'amazon/util'
 require 'amazon/webservices/util/xml_simplifier'
 require 'amazon/webservices/util/convenience_wrapper'
@@ -21,6 +22,8 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   SUBMISSION_RATE_QUALIFICATION_TYPE_ID = "00000000000000000000";
   LOCALE_QUALIFICATION_TYPE_ID = "00000000000000000071";
 
+  DEFAULT_THREADCOUNT = 10
+
   serviceCall :RegisterHITType, :RegisterHITTypeResult, {
                                                           :AssignmentDurationInSeconds => 60*60,
                                                           :AutoApprovalDelayInSeconds => 60*60*24*7
@@ -30,7 +33,6 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
                                   :AssignmentDurationInSeconds => 60*60,
                                   :AutoApprovalDelayInSeconds => 60*60*24*7,
                                   :LifetimeInSeconds => 60*60*24,
-                                  :ResponseGroup => %w( Minimal HITDetail HITQuestion )
                                 }
 
   serviceCall :DisableHIT, :DisableHITResult
@@ -39,7 +41,7 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   serviceCall :ForceExpireHIT, :ForceExpireHITResult
   serviceCall :GetHIT, :HIT, { :ResponseGroup => %w( Minimal HITDetail HITQuestion HITAssignmentSummary ) }
   serviceCall :ChangeHITTypeOfHIT, :ChangeHITTypeOfHITResult
-  
+
   serviceCall :SearchHITs, :SearchHITsResult
   serviceCall :GetReviewableHITs, :GetReviewableHITsResult
   serviceCall :SetHITAsReviewing, :SetHITAsReviewingResult
@@ -50,7 +52,7 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
   paginate :SearchHITs, :HIT
   paginate :GetReviewableHITs, :HIT
   paginate :GetAssignmentsForHIT, :Assignment
-  
+
   serviceCall :GrantBonus, :GrantBonusResult
   serviceCall :GetBonusPayments, :GetBonusPaymentsResult
 
@@ -92,12 +94,14 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
       loaded = Amazon::Util::DataReader.load( args[:Config], :YAML )
       newargs = args.merge loaded.inject({}) {|a,b| a[b[0].to_sym] = b[1] ; a }
     end
+    @threadcount = args[:ThreadCount].to_i
+    @threadcount = DEFAULT_THREADCOUNT unless @threadcount >= 1
     raise "Cannot override WSDL version ( #{WSDL_VERSION} )" unless args[:Version].nil? or args[:Version].equals? WSDL_VERSION
-    super newargs.merge( :Name => :AWSMechanicalTurkRequester, 
+    super newargs.merge( :Name => :AWSMechanicalTurkRequester,
                          :ServiceClass => Amazon::WebServices::MechanicalTurk,
                          :Version => WSDL_VERSION )
   end
-  
+
   # Create a series of similar HITs, sharing common parameters.  Utilizes HITType
   # * hit_template is the array of parameters to pass to createHIT.
   # * question_template will be passed as a template into ERB to generate the :Question parameter
@@ -111,30 +115,41 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
     hit_template.delete :LifetimeInSeconds
     hit_template.delete :MaxAssignments
     hit_template.delete :RequesterAnnotation
-    
-    ht = registerHITType( hit_template )[:HITTypeId]
-  
-    created = []
-    failed = []
-    hit_data_set.each { |hit_data|
-      begin
-        b = Amazon::Util::Binder.new( hit_data )
-        annotation = b.erb_eval( annotation_template )
-        numassignments = b.erb_eval( numassignments_template.to_s ).to_i
-        question = b.erb_eval( question_template )
-        created << self.createHIT( :HITTypeId => ht, 
-                                   :LifetimeInSeconds => lifetime, 
+
+    ht = hit_template[:HITTypeId] || registerHITType( hit_template )[:HITTypeId]
+
+    tp = Amazon::Util::ThreadPool.new @threadcount
+
+    created = [].extend(MonitorMixin)
+    failed = [].extend(MonitorMixin)
+    hit_data_set.each do |hd|
+      tp.addWork(hd) do |hit_data|
+        begin
+          b = Amazon::Util::Binder.new( hit_data )
+          annotation = b.erb_eval( annotation_template )
+          numassignments = b.erb_eval( numassignments_template.to_s ).to_i
+          question = b.erb_eval( question_template )
+          result = self.createHIT( :HITTypeId => ht,
+                                   :LifetimeInSeconds => lifetime,
                                    :MaxAssignments => ( hit_data[:MaxAssignments] || numassignments || 1 ),
-                                   :Question => question, 
-                                   :RequesterAnnotation => ( hit_data[:RequesterAnnotation] || annotation || "") 
+                                   :Question => question,
+                                   :RequesterAnnotation => ( hit_data[:RequesterAnnotation] || annotation || "")
                                  )
-      rescue => e
-        failed << hit_data.merge( :Error => e.message )
-      end
-    }
+          created.synchronize do
+            created << result
+          end
+        rescue => e
+          failed.synchronize do
+            failed << hit_data.merge( :Error => e.message )
+          end
+        end
+      end # tp.addWork
+    end # hit_data_set.each
+    tp.finish
+
     return :Created => created, :Failed => failed
   end
-  
+
   # Update a series of HITs to belong to a new HITType
   # * hit_template is the array of parameters to pass to registerHITType
   # * hit_ids is a list of HITIds (strings)
@@ -142,19 +157,29 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
     hit_template = hit_template.dup
     hit_template.delete :LifetimeInSeconds
     hit_template.delete :RequesterAnnotation
-    
+
     hit_type_id = registerHITType( hit_template )[:HITTypeId]
 
-    updated = []
-    failed = []
-    hit_ids.each do |hit_id|
-      begin
-        changeHITTypeOfHIT( :HITId => hit_id, :HITTypeId => hit_type_id )
-        updated << hit_id
-      rescue => e
-        failed << { :HITId => hit_id, :Error => e.message }
-      end
-    end
+    tp = Amazon::Util::ThreadPool.new @threadcount
+
+    updated = [].extend(MonitorMixin)
+    failed = [].extend(MonitorMixin)
+    hit_ids.each do |hid|
+      tp.addWork(hid) do |hit_id|
+        begin
+          changeHITTypeOfHIT( :HITId => hit_id, :HITTypeId => hit_type_id )
+          updated.synchronize do
+            updated << hit_id
+          end
+        rescue => e
+          failed.synchronize do
+            failed << { :HITId => hit_id, :Error => e.message }
+          end
+        end
+      end # tp.addWork
+    end # hit_ids.each
+    tp.finish
+
     return :Updated => updated, :Failed => failed
   end
 
@@ -194,18 +219,24 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
     changeHITTypeOfHIT( :HITId => hit_id, :HITTypeId => hit_type_id )
   end
 
-  
+
   def getHITResults( list )
-    results = []
-    list.each do |h|
-      hit = getHIT( :HITId => h[:HITId] )
-      getAssignmentsForHITAll( :HITId => h[:HITId] ).each {|assignment|
-        results << ( hit.merge( assignment ) )
-      }
+    results = [].extend(MonitorMixin)
+    tp = Amazon::Util::ThreadPool.new @threadcount
+    list.each do |line|
+      tp.addWork(line) do |h|
+        hit = getHIT( :HITId => h[:HITId] )
+        getAssignmentsForHITAll( :HITId => h[:HITId] ).each {|assignment|
+          results.synchronize do
+            results << ( hit.merge( assignment ) )
+          end
+        }
+      end
     end
+    tp.finish
     results.flatten
   end
-  
+
   # Returns available funds in USD
   # Calls getAccountBalance and parses out the correct amount
   def availableFunds

@@ -39,7 +39,7 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
     default_call = @mock.next # request from convenience layer
     request = default_call.request
     assert !request.keys.empty?
-    expected = [:MaxAssignments, :AssignmentDurationInSeconds, :AutoApprovalDelayInSeconds, :LifetimeInSeconds, :ResponseGroup]
+    expected = [:MaxAssignments, :AssignmentDurationInSeconds, :AutoApprovalDelayInSeconds, :LifetimeInSeconds]
     assert_equal [], request.keys - expected, 'Convenience layer should not populate unexpected arguments'
     assert_equal [], expected - request.keys, 'Convenience layer should populate all expected arguments'
 
@@ -103,26 +103,24 @@ class TestMockMechanicalTurkRequester < Test::Unit::TestCase
     assert_equal 'foo bar', ht.request[:Description]
     assert_equal nil, ht.request[:MaxAssignments]
 
-    h1 = @mock.next
-    assert_equal :CreateHIT, h1.name
-    assert_equal 'mockHITType', h1.request[:HITTypeId]
-    assert_equal 2, h1.request[:MaxAssignments]
-    assert_equal 'Funky LaLa', h1.request[:RequesterAnnotation]
-    assert_equal 'who what 1', h1.request[:Question]
-
-    h2 = @mock.next
-    assert_equal :CreateHIT, h2.name
-    assert_equal 'mockHITType', h2.request[:HITTypeId]
-    assert_equal 1, h2.request[:MaxAssignments]
-    assert_equal 'Funky ', h2.request[:RequesterAnnotation]
-    assert_equal 'who what 2', h2.request[:Question]
-
-    h3 = @mock.next
-    assert_equal :CreateHIT, h3.name
-    assert_equal 'mockHITType', h3.request[:HITTypeId]
-    assert_equal 2, h3.request[:MaxAssignments]
-    assert_equal 'Funky Poodle', h3.request[:RequesterAnnotation]
-    assert_equal 'who what ', h3.request[:Question]
+    3.times do
+      hit = @mock.next
+      assert_equal :CreateHIT, hit.name
+      assert_equal 'mockHITType', hit.request[:HITTypeId]
+      case hit.request[:Question]
+      when 'who what 1'
+        assert_equal 2, hit.request[:MaxAssignments]
+        assert_equal 'Funky LaLa', hit.request[:RequesterAnnotation]
+      when 'who what 2'
+        assert_equal 1, hit.request[:MaxAssignments]
+        assert_equal 'Funky ', hit.request[:RequesterAnnotation]
+      when 'who what '
+        assert_equal 2, hit.request[:MaxAssignments]
+        assert_equal 'Funky Poodle', hit.request[:RequesterAnnotation]
+      else
+        fail 'generated an unexpected Question'
+      end
+    end
 
     assert_equal nil, @mock.next
   end

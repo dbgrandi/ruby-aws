@@ -12,6 +12,9 @@ lib/amazon/util/filter_chain.rb
 lib/amazon/util/hash_nesting.rb
 lib/amazon/util/lazy_results.rb
 lib/amazon/util/logging.rb
+lib/amazon/util/paginated_iterator.rb
+lib/amazon/util/proactive_results.rb
+lib/amazon/util/threadpool.rb
 lib/amazon/util/user_data_store.rb
 lib/amazon/webservices/mechanical_turk.rb
 lib/amazon/webservices/mechanical_turk_requester.rb
@@ -36,6 +39,7 @@ samples/mturk/best_image/BestImage.rb
 samples/mturk/best_image/best_image.properties
 samples/mturk/best_image/best_image.question
 samples/mturk/blank_slate/BlankSlate.rb
+samples/mturk/blank_slate/BlankSlate_multithreaded.rb
 samples/mturk/helloworld/MTurkHelloWorld.rb
 samples/mturk/helloworld/mturk.yml
 samples/mturk/reviewer/Reviewer.rb
@@ -54,7 +58,12 @@ test/mturk/test_mock_mechanical_turk_requester.rb
 test/test_ruby-aws.rb
 test/unit/test_binder.rb
 test/unit/test_data_reader.rb
+test/unit/test_exceptions.rb
 test/unit/test_hash_nesting.rb
 test/unit/test_lazy_results.rb
 test/unit/test_mock_transport.rb
+test/unit/test_paginated_iterator.rb
+test/unit/test_proactive_results.rb
 test/unit/test_question_generator.rb
+test/unit/test_threadpool.rb
+test/unit/test_user_data_store.rb

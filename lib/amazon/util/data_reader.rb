@@ -146,8 +146,8 @@ class DataReader
   
   # convert to integer if possible
   def correct_type( str )
-    return str.to_f if str.to_f.to_s == str
-    return str.to_i if str.to_i.to_s == str
+    return str.to_f if str =~ /^\d+\.\d+$/
+    return str.to_i if str =~ /^\d+$/
     return str
   end
   

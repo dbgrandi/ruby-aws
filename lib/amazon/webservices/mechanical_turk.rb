@@ -39,7 +39,9 @@ class MechanicalTurk
       else
         require 'amazon/webservices/util/soap_transport.rb'
         allowOverride( 'Transport', args[:Transport], newargs ) { |a|
-          if Util::SOAPTransport.canSOAP?
+          if Util::RESTTransport.canPost?
+            getRESTTransport(newargs)
+          elsif Util::SOAPTransport.canSOAP?
             getSOAPTransport(newargs)
           else
             getRESTTransport(newargs)

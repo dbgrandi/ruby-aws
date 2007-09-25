@@ -54,18 +54,25 @@ class ConvenienceWrapper
   def self.paginate( method, elementTag, pageSize=25 )
     method = method.to_s
     all_name = ( method[0..0].downcase + method[1..-1] + "All" ).to_sym
+    iterator_name = ( method[0..0].downcase + method[1..-1] + "Iterator" ).to_sym
+    proactive_name = ( method[0..0].downcase + method[1..-1] + "AllProactive" ).to_sym
     method = ( method[0..0].downcase + method[1..-1] ).to_sym
 
     raise 'Stop redifining service methods!' if self.instance_methods.include? name.to_s
 
-    define_method( all_name ) do |*params|
-      userArgs = params[0] || {}
-      args = {:PageSize => pageSize}.merge( userArgs )
-      lazy = Amazon::Util::LazyResults.new do |pageNumber|
-        pageArgs = {:PageNumber => pageNumber}.merge( args )
-        self.send( method, pageArgs)[elementTag]
+    processors = { all_name => Amazon::Util::LazyResults,
+                   iterator_name => Amazon::Util::PaginatedIterator,
+                   proactive_name => Amazon::Util::ProactiveResults }
+
+    processors.each do |name,processor|
+      define_method( name ) do |*params|
+        userArgs = params[0] || {}
+        args = {:PageSize => pageSize}.merge( userArgs ) # allow user to override page size
+        return processor.new do |pageNumber|
+          pageArgs = args.merge({:PageNumber => pageNumber}) # don't allow override of page number
+          self.send( method, pageArgs)[elementTag]
+        end
       end
-      return lazy
     end
 
   end
