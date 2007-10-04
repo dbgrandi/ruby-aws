@@ -6,6 +6,8 @@ require 'amazon/util/logging'
 require 'amazon/webservices/util/amazon_authentication_relay'
 require 'amazon/webservices/mturk/mechanical_turk_error_handler'
 require 'amazon/webservices/util/validation_exception'
+require 'amazon/webservices/util/rest_transport'
+require 'amazon/webservices/util/soap_transport'
 
 module Amazon
 module WebServices
