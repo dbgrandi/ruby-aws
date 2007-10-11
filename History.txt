@@ -1,4 +1,4 @@
-== PreRelease
+== 1.2.0 / 2007-10-11
 
 === 3 major enhancements
 * Threading optimizations for bulk convenience operations:
@@ -8,7 +8,7 @@
 * Paginated extension xxxIterator -- hands back an iterator instead
   of buffered results, for streaming large result sets
 
-=== 1 minor enhancements
+=== 2 minor enhancements
 * Enhanced test coverage
 * Rest transport now default (previously SOAP)
 

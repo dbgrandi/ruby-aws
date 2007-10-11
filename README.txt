@@ -34,7 +34,7 @@ you must meet these prerequisites:
   Be sure to use the same e-mail address and password you used when creating
   your Amazon Web Services account.
   You can sign up at the {Requester web site}[http://requester.mturk.com].
-* You must have Ruby 1.8.2 or later.  You can download Ruby at the following
+* You must have Ruby 1.8.3 or later.  You can download Ruby at the following
   web site: http://www.ruby-lang.org.
 * You must have RubyGems[http://rubyforge.org/projects/rubygems] installed
   and configured correctly for your Ruby installation.  Review the installation

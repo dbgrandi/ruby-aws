@@ -24,7 +24,7 @@ def approveRemainingAssignments(id)
   print "Approving remaining assignments for HIT #{id}: "
   count = 0
   @mturk.getAssignmentsForHITAll( :HITId => id ).each do |assignment|
-    @mturk.approveAssignment :AssignmentId => assignment[:AssignmentId]
+    @mturk.approveAssignment :AssignmentId => assignment[:AssignmentId] if assignment[:AssignmentStatus] == 'Submitted'
     count += 1
   end
   puts "OK (Approved #{count})"

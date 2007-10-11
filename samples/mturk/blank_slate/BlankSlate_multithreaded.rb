@@ -19,7 +19,7 @@ end
 def approveRemainingAssignments(id)
   @mturk.getAssignmentsForHITAll( :HITId => id ).each do |assignment|
     begin
-      @mturk.approveAssignment :AssignmentId => assignment[:AssignmentId] if assignment[:Status] == 'Pending'
+      @mturk.approveAssignment :AssignmentId => assignment[:AssignmentId] if assignment[:AssignmentStatus] == 'Submitted'
     rescue
     end
   end

@@ -39,7 +39,7 @@ To use the Libraries and successfully run the samples, you must meet these prere
 
 * You must have an Amazon Web Services (AWS) account. You can sign up at the AWS web site: http://aws.amazon.com.
 * You must have an Amazon Mechanical Turk Requester account. Be sure to use the same e-mail address and password you used when creating your Amazon Web Services account.  You can sign up at the Requester web site: http://requester.mturk.com.
-* You must have Ruby 1.8.2 or later.  You can download Ruby at the following web site: http://www.ruby-lang.org.
+* You must have Ruby 1.8.3 or later.  You can download Ruby at the following web site: http://www.ruby-lang.org.
 * You must have RubyGems (http://rubyforge.org/projects/rubygems) installed and configured correctly for your Ruby installation.  Review the installation instructions at this link: http://docs.rubygems.org.  
 (Note: If installing RubyGems for the first time, you may need to restart your console to pick up environment changes.  To execute code that is dependent on Ruby Gems, the command to execute is: "ruby -rubygems program_that_uses_gems".  The "-rubygems" command line parameter should be a default parameter that is always included.  To do this, Ruby can utilize the "RUBYOPT" environment label that should be set to "RUBYOPT=-rubygems".  Please refer to documentation specific to your OS on defining environment labels.)
 

@@ -70,7 +70,8 @@ class ConvenienceWrapper
         args = {:PageSize => pageSize}.merge( userArgs ) # allow user to override page size
         return processor.new do |pageNumber|
           pageArgs = args.merge({:PageNumber => pageNumber}) # don't allow override of page number
-          self.send( method, pageArgs)[elementTag]
+          res = self.send( method, pageArgs)[elementTag]
+          res.nil? ? nil : [res].flatten
         end
       end
     end
