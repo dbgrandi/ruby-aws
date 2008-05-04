@@ -140,7 +140,7 @@ class MechanicalTurkRequester < Amazon::WebServices::Util::ConvenienceWrapper
           end
         rescue => e
           failed.synchronize do
-            failed << hit_data.merge( :Error => e.message )
+            failed << hit_data.merge( :Error => e.message, :Description => e.description )
           end
         end
       end # tp.addWork
