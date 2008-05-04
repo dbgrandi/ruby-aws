@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "ruby-aws"
-  s.version = "1.2.1"
+  s.version = "1.2.0"
   s.date = "2008-05-04"
   s.summary = 'Ruby libraries for working with Amazon Web Services ( Mechanical Turk )'
   s.email = 'ruby-aws-develop@rubyforge.org'
